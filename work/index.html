@@ -12,7 +12,17 @@
               .data(dataset)
               .enter()
               .append("p")
-              .text(function(d) {return d;});
+              .style("color", function(d) {
+                if(d > 15) {
+                return "red"
+              }  else {
+                {
+                  return "black";
+                }
+              }
+
+              })
+              .text(function(d) {return "I can count up to " + d;});
         </script>
     </body>
 </html>
