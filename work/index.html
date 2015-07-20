@@ -5,13 +5,7 @@
         <title>D3 Page Template</title>
         <script type="text/javascript" src="d3/d3.js"></script>
         <style>
-          div.bar {
-            display: inline-block;
-            width: 20px;
-            height: 75px;
-            background-color: teal;
-            margin-right:2px;
-          }
+
         </style>
     </head>
     <body>
@@ -36,7 +30,7 @@
         .attr("r", function(d) {
           return d;
         }).
-        attr("tabindex", function(i) {
+        attr("tabindex", function(d, i) {
           return i;
         })
 
