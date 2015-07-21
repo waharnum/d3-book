@@ -28,6 +28,7 @@
           .data(dataset)
           .enter()
           .append("rect")
+          // Example of using multivalue map
           .attr({
             x: function(d, i) {
               return i * (w / dataset.length); // Proportional layout of bars
@@ -35,7 +36,7 @@
             y: function(d) {
               return h - d*4; // Height minus data value
             }
-          })                    
+          })
           .attr("width", w / dataset.length - barPadding)
           .attr("height", function(d) {
             return d*4; // Just the data value
@@ -43,6 +44,27 @@
           .attr("fill", function(d) {
             return "rgb(0, 0, " + (d * 10) + ")";
           });
+
+          svg.selectAll("text")
+            .data(dataset)
+            .enter()
+            .append("text")
+            .text(function(d) {
+              return d;
+            })
+            .attr("x", function(d,i) {
+              return i * (w / dataset.length) + (w / dataset.length - barPadding)/ 2;
+            })
+            .attr("y", function(d) {
+              return h - (d * 4) + 14;
+            })
+            .attr({
+              "font-family": "sans-serif",
+              "font-size": "11px",
+              "fill": "white",
+              "text-anchor": "middle"
+            })
+            ;
 
         </script>
     </body>
