@@ -83,8 +83,24 @@
                })
                .attr("height", function(d) {
                     return yScale(d);
-               });
+               })
+               .attr("fill", function(d) {   // <-- Down here!
+                return "rgb(0, 0, " + (d * 10) + ")";
              });
+
+             svg.selectAll("text")
+                 .data(dataset)
+                 .text(function(d) {
+                      return d;
+                 })
+                 .attr("x", function(d, i) {
+                      return xScale(i) + xScale.rangeBand() / 2;
+                 })
+                 .attr("y", function(d) {
+                      return h - yScale(d) + 14;
+                 });
+
+           });
 
 		</script>
 	</body>
