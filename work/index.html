@@ -20,26 +20,22 @@
     </head>
     <body>
         <script type="text/javascript">
-        var dataset = [
-                          [ 5,     20 ],
-                          [ 480,   90 ],
-                          [ 250,   50 ],
-                          [ 100,   33 ],
-                          [ 330,   95 ],
-                          [ 410,   12 ],
-                          [ 475,   44 ],
-                          [ 25,    67 ],
-                          [ 85,    21 ],
-                          [ 220,   88 ],
-                          [ 220,   88 ],
-                          [600, 150]
-                      ];
+        //Dynamic, random dataset
+        var dataset = [];
+        var numDataPoints = 50;
+        var xRange = Math.random() * 1000;
+        var yRange = Math.random() * 1000;
+        for (var i = 0; i < numDataPoints; i++) {
+            var newNumber1 = Math.floor(Math.random() * xRange);
+            var newNumber2 = Math.floor(Math.random() * yRange);
+            dataset.push([newNumber1, newNumber2]);
+        }
 
         // Width & height
         var w = 800;
         var h = 600;
         var barPadding = 1;
-        var padding = 20;
+        var padding = 30;
 
         // Create SVG element
         var svg = d3.select("body")
@@ -62,7 +58,13 @@
 
         var xAxis = d3.svg.axis()
                     .scale(xScale)
-                    .orient("bottom");
+                    .orient("bottom")
+                    .ticks(5);
+
+        var yAxis = d3.svg.axis()
+                          .scale(yScale)
+                          .orient("left")
+                          .ticks(5);
 
         svg.selectAll("circle")
           .data(dataset)
@@ -101,6 +103,11 @@
            .attr("class", "axis")
            .attr("transform", "translate(0," + (h - padding) +")")
            .call(xAxis);
+
+        svg.append("g")
+           .attr("class","axis")
+           .attr("transform", "translate(" + padding + ",0)")
+           .call(yAxis);
 
         </script>
     </body>
