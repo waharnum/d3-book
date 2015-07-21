@@ -21,13 +21,15 @@
                           [ 25,    67 ],
                           [ 85,    21 ],
                           [ 220,   88 ],
-                          [ 220,   88 ]
+                          [ 220,   88 ],
+                          [600, 150]
                       ];
 
         // Width & height
         var w = 500;
-        var h = 100;
+        var h = 300;
         var barPadding = 1;
+        var padding = 20;
 
         // Create SVG element
         var svg = d3.select("body")
@@ -35,15 +37,18 @@
                     .attr("width", w)
                     .attr("height", h);
 
-
+        // See also http://bl.ocks.org/mbostock/3019563 - Mike Bostock's margin convention
         var xScale = d3.scale.linear()
                      .domain([0, d3.max(dataset, function(d) { return d[0]; })])
-                     .range([0, w]);
+                     .range([padding, w - padding *2]);
 
          var yScale = d3.scale.linear()
                               .domain([0, d3.max(dataset, function(d) { return d[1]; })])
-                              .range([0, h]);
+                              .range([h - padding, padding]);
 
+        var rScale = d3.scale.linear()
+                     .domain([0, d3.max(dataset, function(d) { return d[1] })])
+                     .range([2,5]);
 
         svg.selectAll("circle")
           .data(dataset)
@@ -56,7 +61,7 @@
             return yScale(d[1]);
           })
           .attr("r", function(d) {
-            return Math.sqrt(h - d[1]);
+            return rScale(d[1]);
           });
 
           svg.selectAll("text")
