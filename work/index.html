@@ -24,7 +24,7 @@
         return ds;
       }
 
-      var dataset = randomData(20);
+      var dataset = randomData(30);
 
 			var xScale = d3.scale.ordinal()
 							.domain(d3.range(dataset.length))
@@ -80,12 +80,16 @@
 
          d3.select("p")
              .on("click", function() {
-               dataset = randomData(20);
+               dataset = randomData(30);
 
                svg.selectAll("rect")
                .data(dataset)
                .transition()
-               .duration(1000)
+               .ease("circle")
+               .delay(function(d,i) {
+                 return i / dataset.length * 1000;
+               })
+               .duration(500)
                .attr("y", function(d) {
                     return h - yScale(d);
                })
@@ -99,7 +103,11 @@
              svg.selectAll("text")
                  .data(dataset)
                  .transition()
-                 .duration(1000)
+                 .ease("circle")
+                 .delay(function(d,i) {
+                   return i / dataset.length * 1000;
+                 })
+                 .duration(500)
                  .text(function(d) {
                       return d;
                  })
