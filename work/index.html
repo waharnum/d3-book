@@ -16,8 +16,15 @@
 			var w = 600;
 			var h = 250;
 
-			var dataset = [ 5, 10, 13, 19, 21, 25, 22, 18, 15, 13,
-							11, 12, 15, 20, 18, 17, 16, 18, 23, 25 ];
+      var randomData = function(howMany) {
+        var ds = [];
+        for(i = 0; i < howMany; i++) {
+          ds.push(Math.floor(Math.random() * (25 - 1)) + 1);
+        }
+        return ds;
+      }
+
+      var dataset = randomData(20);
 
 			var xScale = d3.scale.ordinal()
 							.domain(d3.range(dataset.length))
@@ -73,11 +80,11 @@
 
          d3.select("p")
              .on("click", function() {
-               dataset = [11, 12, 15, 20, 18, 17, 16, 18, 23, 25, 5, 10, 13, 19, 21, 25, 22, 18, 15, 13 ];
-               svg.selectAll("rect")
-               .data(dataset);
+               dataset = randomData(20);
+
                svg.selectAll("rect")
                .data(dataset)
+               .transition()
                .attr("y", function(d) {
                     return h - yScale(d);
                })
