@@ -5,7 +5,10 @@
 		<title>D3: A starting point for interactivity</title>
 		<script type="text/javascript" src="d3/d3.js"></script>
 		<style type="text/css">
-
+			svg rect:hover,
+			svg rect:focus {
+				fill: orange;
+			}
 		</style>
 	</head>
 	<body>
@@ -53,20 +56,12 @@
 				 .attr("tabindex", function(d,i) {
 					 return i;
 				 })
-				 .on("mouseover", function(d) {
-					 d3.select(this)
-						 .attr("fill", "orange");
-					 console.log(d);
-				 })
-				 .on("mouseout", function(d) {
-					 d3.select(this)
-					   .transition()
-					   .duration(250)
-						 .attr("fill", "rgb(0, 0, " + (d * 10) + ")");
-					 console.log(d);
-				 })
 				 .on("click", function() {
 					 sortBars();
+				 })
+				 .append("title")
+				 .text(function(d) {
+							 return "This value is " + d;
 				 })
 				 ;
 
@@ -93,7 +88,7 @@
 			var sortFunction;
 			var sortBars = function() {
 				if(sortFunction == d3.descending || sortFunction == null) {
-					sortFunction = d3.ascending;					
+					sortFunction = d3.ascending;
 				} else {
 					sortFunction = d3.descending;
 				}
@@ -102,6 +97,9 @@
 						 return sortFunction(a,b);
 					 })
 					 .transition()
+					 .delay(function(d,i) {
+						 return i * 50;
+					 })
 					 .duration(1000)
 					 .attr("x", function(d, i) {
 						 return xScale(i);
@@ -111,6 +109,9 @@
 							return sortFunction(a,b);
 						})
 						.transition()
+						.delay(function(d,i) {
+							return i * 50;
+						})
 						.duration(1000)
 						.attr("x", function(d, i) {
 	 			   		return xScale(i) + xScale.rangeBand() / 2;
