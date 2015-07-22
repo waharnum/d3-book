@@ -65,6 +65,9 @@
 						 .attr("fill", "rgb(0, 0, " + (d * 10) + ")");
 					 console.log(d);
 				 })
+				 .on("click", function() {
+					 sortBars();
+				 })
 				 ;
 
 
@@ -87,6 +90,35 @@
 			   .attr("font-size", "11px")
 			   .attr("fill", "white");
 
+			var sortFunction;
+			var sortBars = function() {
+				if(sortFunction == d3.descending || sortFunction == null) {
+					sortFunction = d3.ascending;					
+				} else {
+					sortFunction = d3.descending;
+				}
+				svg.selectAll("rect")
+				   .sort(function(a,b) {
+						 return sortFunction(a,b);
+					 })
+					 .transition()
+					 .duration(1000)
+					 .attr("x", function(d, i) {
+						 return xScale(i);
+					 });
+				svg.selectAll("text")
+						.sort(function(a,b) {
+							return sortFunction(a,b);
+						})
+						.transition()
+						.duration(1000)
+						.attr("x", function(d, i) {
+	 			   		return xScale(i) + xScale.rangeBand() / 2;
+	 			   })
+	 			   .attr("y", function(d) {
+	 			   		return h - yScale(d) + 14;
+	 			   });
+			}
 		</script>
 	</body>
 </html>
