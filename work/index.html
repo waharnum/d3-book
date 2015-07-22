@@ -120,6 +120,9 @@
    					   .duration(1000)
              .each("start", function() {
                d3.select(this)
+               // Doing the below breaks the movement of the points - only one transition at a time by default
+               // .transition()
+               // .duration(250)
                .attr("fill", "magenta")
                .attr("r", 3)
              })
