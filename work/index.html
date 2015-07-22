@@ -15,8 +15,16 @@
 		</style>
 	</head>
 	<body>
+		<p id="add">
+			Click to add.
+		</p>
+		<p id="subtract">
+			Click to subtract.
+		</p>
 		<script type="text/javascript">
-
+			var randomInteger = function(min, max) {
+				return Math.floor(Math.random() * (max - min)) + min;
+			}
 			//Width and height
 			var w = 300;
 			var h = 300;
@@ -64,6 +72,39 @@
 			    .text(function(d) {
 			    	return d.value;
 			    });
+
+			d3.selectAll("p")
+				.on("click", function() {
+					paragraphId = this.id;
+					if(paragraphId == "add") {
+						newValue = randomInteger(1,50);
+						dataset.push(25);
+						var arcs = svg.selectAll("g.arc")
+						              .data(pie(dataset));
+						arcs.enter()
+								.append("g")
+								.attr("class", "arc")
+								.attr("transform", "translate(" + outerRadius + "," + outerRadius + ")");
+
+						arcs.append("path")
+						    .attr("fill", function(d, i) {
+									return color(i);
+								})
+								.attr("d", arc);
+
+						arcs.append("text")
+						    .attr("transform", function(d) {
+						    	return "translate(" + arc.centroid(d) + ")";
+						    })
+						    .attr("text-anchor", "middle")
+						    .text(function(d) {
+						    	return d.value;
+						    });
+
+					} else if (paragraphId == "subtract") {
+
+					}
+				});
 
 		</script>
 	</body>
