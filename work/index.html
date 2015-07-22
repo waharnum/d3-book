@@ -2,41 +2,65 @@
 <html lang="en">
 	<head>
 		<meta charset="utf-8">
-		<title>D3: A flexible, scalable bar chart</title>
-		<script type="text/javascript" src="d3/d3.js"></script>
+		<title>D3: Transitioning points to randomized values</title>
+		<script type="text/javascript" src="/d3/d3.js"></script>
 		<style type="text/css">
-			/* No style rules here yet */
+
+			.axis path,
+			.axis line {
+				fill: none;
+				stroke: black;
+				shape-rendering: crispEdges;
+			}
+
+			.axis text {
+				font-family: sans-serif;
+				font-size: 11px;
+			}
+
 		</style>
 	</head>
 	<body>
-    <p>Click on this text to update the chart with new data values (once).</p>
+
+		<p>Click on this text to update the chart with new data values as many times as you like!</p>
+
 		<script type="text/javascript">
 
 			//Width and height
-			var w = 600;
-			var h = 250;
+			var w = 500;
+			var h = 300;
+			var padding = 30;
 
-      var randomNumber = function(min, max) {
-        return Math.floor(Math.random() * (max - min)) + min;
-      }
+			//Dynamic, random dataset
+			var dataset = [];											//Initialize empty array
+			var numDataPoints = 50;										//Number of dummy data points to create
+			var maxRange = Math.random() * 1000;						//Max range of new values
+			for (var i = 0; i < numDataPoints; i++) {					//Loop numDataPoints times
+				var newNumber1 = Math.floor(Math.random() * maxRange);	//New random integer
+				var newNumber2 = Math.floor(Math.random() * maxRange);	//New random integer
+				dataset.push([newNumber1, newNumber2]);					//Add new number to array
+			}
 
-      var randomData = function(howMany, maxNumber) {
-        var ds = [];
-        for(i = 0; i < howMany; i++) {
-          ds.push(randomNumber(1,maxNumber));
-        }
-        return ds;
-      }
-
-      var dataset = randomData(30, randomNumber(25,50));
-
-			var xScale = d3.scale.ordinal()
-							.domain(d3.range(dataset.length))
-							.rangeRoundBands([0, w], 0.05);
+			//Create scale functions
+			var xScale = d3.scale.linear()
+								 .domain([0, d3.max(dataset, function(d) { return d[0]; })])
+								 .range([padding, w - padding * 2]);
 
 			var yScale = d3.scale.linear()
-							.domain([0, d3.max(dataset)])
-							.range([0, h]);
+								 .domain([0, d3.max(dataset, function(d) { return d[1]; })])
+								 .range([h - padding, padding]);
+
+			//Define X axis
+			var xAxis = d3.svg.axis()
+							  .scale(xScale)
+							  .orient("bottom")
+							  .ticks(5);
+
+			//Define Y axis
+			var yAxis = d3.svg.axis()
+							  .scale(yScale)
+							  .orient("left")
+							  .ticks(5);
 
 			//Create SVG element
 			var svg = d3.select("body")
@@ -44,86 +68,65 @@
 						.attr("width", w)
 						.attr("height", h);
 
-			//Create bars
-			svg.selectAll("rect")
+			//Create circles
+			svg.selectAll("circle")
 			   .data(dataset)
 			   .enter()
-			   .append("rect")
-			   .attr("x", function(d, i) {
-			   		return xScale(i);
+			   .append("circle")
+			   .attr("cx", function(d) {
+			   		return xScale(d[0]);
 			   })
-			   .attr("y", function(d) {
-			   		return h - yScale(d);
+			   .attr("cy", function(d) {
+			   		return yScale(d[1]);
 			   })
-			   .attr("width", xScale.rangeBand())
-			   .attr("height", function(d) {
-			   		return yScale(d);
-			   })
-			   .attr("fill", function(d) {
-					return "rgb(0, 0, " + (d * 10) + ")";
-			   });
+			   .attr("r", 2);
 
-			//Create labels
-			svg.selectAll("text")
-			   .data(dataset)
-			   .enter()
-			   .append("text")
-			   .text(function(d) {
-			   		return d;
-			   })
-			   .attr("text-anchor", "middle")
-			   .attr("x", function(d, i) {
-			   		return xScale(i) + xScale.rangeBand() / 2;
-			   })
-			   .attr("y", function(d) {
-			   		return h - yScale(d) + 14;
-			   })
-			   .attr("font-family", "sans-serif")
-			   .attr("font-size", "11px")
-			   .attr("fill", "white");
+			//Create X axis
+			svg.append("g")
+				.attr("class", "axis")
+				.attr("transform", "translate(0," + (h - padding) + ")")
+				.call(xAxis);
 
-         d3.select("p")
-             .on("click", function() {
-               var dataset = randomData(30, randomNumber(25,50));
-               yScale.domain([0, d3.max(dataset)]);
+			//Create Y axis
+			svg.append("g")
+				.attr("class", "axis")
+				.attr("transform", "translate(" + padding + ",0)")
+				.call(yAxis);
 
-               svg.selectAll("rect")
-               .data(dataset)
-               .transition()
-               .ease("circle")
-               .delay(function(d,i) {
-                 return i / dataset.length * 1000;
-               })
-               .duration(500)
-               .attr("y", function(d) {
-                    return h - yScale(d);
-               })
-               .attr("height", function(d) {
-                    return yScale(d);
-               })
-               .attr("fill", function(d) {   // <-- Down here!
-                return "rgb(0, 0, " + (d * 10) + ")";
-             });
 
-             svg.selectAll("text")
-                 .data(dataset)
-                 .transition()
-                 .ease("circle")
-                 .delay(function(d,i) {
-                   return i / dataset.length * 1000;
-                 })
-                 .duration(500)
-                 .text(function(d) {
-                      return d;
-                 })
-                 .attr("x", function(d, i) {
-                      return xScale(i) + xScale.rangeBand() / 2;
-                 })
-                 .attr("y", function(d) {
-                      return h - yScale(d) + 14;
-                 });
 
-           });
+			//On click, update with new data
+			d3.select("p")
+				.on("click", function() {
+
+					//New values for dataset
+					var numValues = dataset.length;						 		//Count original length of dataset
+					var maxRange = Math.random() * 1000;						//Max range of new values
+					dataset = [];  						 				 		//Initialize empty array
+					for (var i = 0; i < numValues; i++) {				 		//Loop numValues times
+						var newNumber1 = Math.floor(Math.random() * maxRange);	//New random integer
+						var newNumber2 = Math.floor(Math.random() * maxRange);	//New random integer
+						dataset.push([newNumber1, newNumber2]);					//Add new number to array
+					}
+
+					//Update scale domains
+					xScale.domain([0, d3.max(dataset, function(d) { return d[0]; })]);
+					yScale.domain([0, d3.max(dataset, function(d) { return d[1]; })]);
+
+					//Update all circles
+					svg.selectAll("circle")
+					   .data(dataset)
+					   .transition()
+   					   .duration(1000)
+					   .attr("cx", function(d) {
+					   		return xScale(d[0]);
+					   })
+					   .attr("cy", function(d) {
+					   		return yScale(d[1]);
+					   });
+
+				});
+
 
 		</script>
 	</body>
