@@ -94,6 +94,28 @@
 					    	return "translate(" + arc.centroid(d) + ")";
 					    })
 
+						var newArcs = arcs.enter()
+						    .append("g")
+								.attr("class", "arc")
+								.attr("transform", "translate(" + outerRadius + "," + outerRadius + ")");
+
+								newArcs.append("path")
+								.attr("fill", function(d, i) {
+									return color(i);
+								})
+								.attr("d", arc)
+
+						    newArcs.append("text")
+						    .attr("transform", function(d) {
+						    	return "translate(" + arc.centroid(d) + ")";
+						    })
+						    .attr("text-anchor", "middle")
+						    .text(function(d) {
+						    	return d.value;
+						    });
+
+
+
 
 					} else if (paragraphId == "subtract") {
 
