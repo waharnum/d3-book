@@ -26,10 +26,15 @@
 				return Math.floor(Math.random() * (max - min)) + min;
 			}
 			//Width and height
-			var w = 300;
-			var h = 300;
+			var w = 500;
+			var h = 500;
 
-			var dataset = [ 5, 10, 20, 45, 6, 25 ];
+			var dataset = [
+										{label: "iPhone", value: 400},
+										{label: "Android", value: 370},
+										{label: "Windows Phone", value: 25},
+										{label: "Blackberry", value:87}
+										];
 
 			var outerRadius = w / 2;
 			var innerRadius = 0;
@@ -37,16 +42,22 @@
 							.innerRadius(innerRadius)
 							.outerRadius(outerRadius);
 
-			var pie = d3.layout.pie();
+			var pie = d3.layout.pie()
+									.value(function(d) { return d.value });
 
 			//Easy colors accessible via a 20-step ordinal scale
-			var color = d3.scale.category10();
+			var color = d3.scale.category20();
 
 			//Create SVG element
 			var svg = d3.select("body")
 						.append("svg")
 						.attr("width", w)
 						.attr("height", h);
+
+			//Create table element
+			var table = d3.select("body")
+										.append("table")
+										.append("tbody");
 
 			//Set up groups
 			var arcs = svg.selectAll("g.arc")
@@ -55,6 +66,18 @@
 						  .append("g")
 						  .attr("class", "arc")
 						  .attr("transform", "translate(" + outerRadius + "," + outerRadius + ")");
+
+			//Set up table
+			var rows = table.selectAll("tbody tr")
+											 .data(dataset)
+											 .enter()
+											 .append("tr")
+											 .html(function(d, i) {
+											 		return "<td>"+d.label+"</td>"+
+																 "<td>"+d.value+"</td>"+
+																 "<td style='background-color:"+color(i)+";'>&nbsp;&nbsp;&nbsp;&nbsp;</td>";
+											 });
+
 
 			//Draw arc paths
 			arcs.append("path")
@@ -70,14 +93,16 @@
 			    })
 			    .attr("text-anchor", "middle")
 			    .text(function(d) {
-			    	return d.value;
+						// return d.data.label;
+						return d.value;
 			    });
 
 			d3.selectAll("p")
 				.on("click", function() {
 					paragraphId = this.id;
 					if(paragraphId == "add") {
-						newValue = randomInteger(0,30);
+						newValue = {label: "Random Phone", value: randomInteger(50,250)};
+						// newValue = randomInteger(0,30);
 						dataset.push(newValue);
 					} else if(paragraphId == "subtract") {
 						dataset.pop();
@@ -110,11 +135,27 @@
 						    })
 						    .attr("text-anchor", "middle")
 						    .text(function(d) {
-						    	return d.value;
+						    	// return d.data.label;
+									return d.value;
 						    });
 
 						var removedArcs = arcs.exit()
 									.remove("g");
+
+						var rows = table.selectAll("tbody tr")
+														 .data(dataset);
+
+						var newRows = rows.enter()
+																.append("tr")
+																.html(function(d, i) {
+																	 return "<td>"+d.label+"</td>"+
+																					"<td>"+d.value+"</td>"+
+																					"<td style='background-color:"+color(i)+";'>&nbsp;&nbsp;&nbsp;&nbsp;</td>";
+																});
+
+						var removedRows = rows.exit()
+																.remove("tr");
+
 				});
 
 		</script>
