@@ -6,10 +6,18 @@
 		<script type="text/javascript" src="d3/d3.js"></script>
 		<style type="text/css">
 
-			text {
+			svg text {
 				font-family: sans-serif;
 				font-size: 12px;
 				fill: white;
+			}
+
+			svg g:focus path {
+				fill:black;
+			}
+
+			svg g:focus path {
+				fill: black;
 			}
 
 		</style>
@@ -64,6 +72,9 @@
 						  .data(pie(dataset))
 						  .enter()
 						  .append("g")
+							.attr("tabindex", function(d,i) {
+								return i;
+							})
 						  .attr("class", "arc")
 						  .attr("transform", "translate(" + outerRadius + "," + outerRadius + ")");
 
@@ -120,6 +131,9 @@
 
 						var newArcs = arcs.enter()
 						    .append("g")
+								.attr("tabindex", function(d,i) {
+									return i;
+								})
 								.attr("class", "arc")
 								.attr("transform", "translate(" + outerRadius + "," + outerRadius + ")");
 
