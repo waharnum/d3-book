@@ -20,6 +20,15 @@
 				fill: black;
 			}
 
+			svg g.matched path {
+				fill: black;
+			}
+
+			table tr:hover td {
+				background-color:black;
+				color: white;
+			}
+
 		</style>
 	</head>
 	<body>
@@ -43,6 +52,11 @@
 										{label: "Windows Phone", value: 25},
 										{label: "Blackberry", value:87}
 										];
+
+			// Label-based key function
+			var key = function(d) {
+				return d.label;
+			};
 
 			var outerRadius = w / 2;
 			var innerRadius = 0;
@@ -69,7 +83,7 @@
 
 			//Set up groups
 			var arcs = svg.selectAll("g.arc")
-						  .data(pie(dataset))
+						  .data(pie(dataset, key))
 						  .enter()
 						  .append("g")
 							.attr("tabindex", function(d,i) {
@@ -80,9 +94,27 @@
 
 			//Set up table
 			var rows = table.selectAll("tbody tr")
-											 .data(dataset)
+											 .data(dataset, key)
 											 .enter()
 											 .append("tr")
+											 .on("mouseover", function(d,i) {
+												 var rowData = d3.select(this).data();
+												 var rowLabel = rowData[0].label;
+												 var matchingArc = d3.selectAll("svg g.arc").filter(function (d) {
+													 arcLabel = d.data.label;
+													 if(arcLabel == rowLabel) return true;
+												 });
+												 matchingArc.classed("matched", true);
+											 })
+											 .on("mouseout", function(d,i) {
+												 var rowData = d3.select(this).data();
+												 var rowLabel = rowData[0].label;
+												 var matchingArc = d3.selectAll("svg g.arc").filter(function (d) {
+													 arcLabel = d.data.label;
+													 if(arcLabel == rowLabel) return true;
+												 });
+												 matchingArc.classed("matched", false);
+											 })
 											 .html(function(d, i) {
 											 		return "<td>"+d.label+"</td>"+
 																 "<td>"+d.value+"</td>"+
@@ -112,14 +144,14 @@
 				.on("click", function() {
 					paragraphId = this.id;
 					if(paragraphId == "add") {
-						newValue = {label: "Random Phone", value: randomInteger(50,250)};
+						newValue = {label: "Random Phone Brand #"+randomInteger(1000,5000), value: randomInteger(50,250)};
 						// newValue = randomInteger(0,30);
 						dataset.push(newValue);
 					} else if(paragraphId == "subtract") {
 						dataset.pop();
 					}
 						var arcs = svg.selectAll("g.arc")
-						              .data(pie(dataset));
+						              .data(pie(dataset, key));
 
 						arcs.select("path")
 						.attr("d", arc);
@@ -157,10 +189,28 @@
 									.remove("g");
 
 						var rows = table.selectAll("tbody tr")
-														 .data(dataset);
+														 .data(dataset,key);
 
 						var newRows = rows.enter()
 																.append("tr")
+																.on("mouseover", function(d,i) {
+				 												 var rowData = d3.select(this).data();
+				 												 var rowLabel = rowData[0].label;
+				 												 var matchingArc = d3.selectAll("svg g.arc").filter(function (d) {
+				 													 arcLabel = d.data.label;
+				 													 if(arcLabel == rowLabel) return true;
+				 												 });
+				 												 matchingArc.classed("matched", true);
+				 											 })
+				 											 .on("mouseout", function(d,i) {
+				 												 var rowData = d3.select(this).data();
+				 												 var rowLabel = rowData[0].label;
+				 												 var matchingArc = d3.selectAll("svg g.arc").filter(function (d) {
+				 													 arcLabel = d.data.label;
+				 													 if(arcLabel == rowLabel) return true;
+				 												 });
+				 												 matchingArc.classed("matched", false);
+				 											 })																
 																.html(function(d, i) {
 																	 return "<td>"+d.label+"</td>"+
 																					"<td>"+d.value+"</td>"+
