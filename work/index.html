@@ -39,7 +39,7 @@
 
 			var pie = d3.layout.pie();
 
-			//Easy colors accessible via a 10-step ordinal scale
+			//Easy colors accessible via a 20-step ordinal scale
 			var color = d3.scale.category10();
 
 			//Create SVG element
@@ -77,19 +77,18 @@
 				.on("click", function() {
 					paragraphId = this.id;
 					if(paragraphId == "add") {
-						newValue = randomInteger(0,25);
+						newValue = randomInteger(0,30);
 						dataset.push(newValue);
+					} else if(paragraphId == "subtract") {
+						dataset.pop();
+					}
 						var arcs = svg.selectAll("g.arc")
 						              .data(pie(dataset));
 
 						arcs.select("path")
-				    .transition()
-				    .duration(500)
 						.attr("d", arc);
 
 						arcs.select("text")
-						.transition()
-						.duration(500)
 						.attr("transform", function(d) {
 					    	return "translate(" + arc.centroid(d) + ")";
 					    })
@@ -114,12 +113,8 @@
 						    	return d.value;
 						    });
 
-
-
-
-					} else if (paragraphId == "subtract") {
-
-					}
+						var removedArcs = arcs.exit()
+									.remove("g");
 				});
 
 		</script>
