@@ -12,19 +12,16 @@
 				fill: white;
 			}
 
-			svg g:focus path {
-				fill:black;
-			}
-
-			svg g:hover path {
+			svg g:hover path,
+			svg g:focus path,
+			svg g.matched path
+			 {
 				fill: black;
 			}
 
-			svg g.matched path {
-				fill: black;
-			}
-
-			table tr:hover td {
+			table tr:hover td,
+			table tr:focus td,
+			table tr.matched td {
 				background-color:black;
 				color: white;
 			}
@@ -58,6 +55,20 @@
 				return d.label;
 			};
 
+			var findMatchingSliceByLabel = function(matchLabel, selector) {
+				de = d3.selectAll(selector).filter(function (d) {
+					if(matchLabel == d.data.label) return true;
+				});
+				return de;
+			}
+
+			var findMatchingRowByLabel = function(matchLabel, selector) {
+				de = d3.selectAll(selector).filter(function (d) {
+					if(matchLabel == d.label) return true;
+				});
+				return de;
+			}
+
 			var outerRadius = w / 2;
 			var innerRadius = 0;
 			var arc = d3.svg.arc()
@@ -86,6 +97,14 @@
 						  .data(pie(dataset, key))
 						  .enter()
 						  .append("g")
+							.on("mouseover", function(d,i) {
+								elem = findMatchingRowByLabel(d3.select(this).data()[0].data.label, "table tbody tr")
+																																			 .classed("matched",true);
+						 })
+						 .on("mouseout", function(d,i) {
+							 elem = findMatchingRowByLabel(d3.select(this).data()[0].data.label, "table tbody tr")
+																																			.classed("matched",false);
+						})
 							.attr("tabindex", function(d,i) {
 								return i;
 							})
@@ -98,22 +117,12 @@
 											 .enter()
 											 .append("tr")
 											 .on("mouseover", function(d,i) {
-												 var rowData = d3.select(this).data();
-												 var rowLabel = rowData[0].label;
-												 var matchingArc = d3.selectAll("svg g.arc").filter(function (d) {
-													 arcLabel = d.data.label;
-													 if(arcLabel == rowLabel) return true;
-												 });
-												 matchingArc.classed("matched", true);
+												 findMatchingSliceByLabel(d3.select(this).data()[0].label, "svg g.arc")
+												 																		           .classed("matched", true);
 											 })
 											 .on("mouseout", function(d,i) {
-												 var rowData = d3.select(this).data();
-												 var rowLabel = rowData[0].label;
-												 var matchingArc = d3.selectAll("svg g.arc").filter(function (d) {
-													 arcLabel = d.data.label;
-													 if(arcLabel == rowLabel) return true;
-												 });
-												 matchingArc.classed("matched", false);
+												 findMatchingSliceByLabel(d3.select(this).data()[0].label, "svg g.arc")
+												 																		           .classed("matched", false);
 											 })
 											 .html(function(d, i) {
 											 		return "<td>"+d.label+"</td>"+
@@ -144,7 +153,7 @@
 				.on("click", function() {
 					paragraphId = this.id;
 					if(paragraphId == "add") {
-						newValue = {label: "Random Phone Brand #"+randomInteger(1000,5000), value: randomInteger(50,250)};
+						newValue = {label: "Random Phone Brand #"+randomInteger(1000,50000), value: randomInteger(50,600)};
 						// newValue = randomInteger(0,30);
 						dataset.push(newValue);
 					} else if(paragraphId == "subtract") {
@@ -166,6 +175,14 @@
 								.attr("tabindex", function(d,i) {
 									return i;
 								})
+								.on("mouseover", function(d,i) {
+									elem = findMatchingRowByLabel(d3.select(this).data()[0].data.label, "table tbody tr")
+																																				 .classed("matched",true);
+							  })
+							  .on("mouseout", function(d,i) {
+								 elem = findMatchingRowByLabel(d3.select(this).data()[0].data.label, "table tbody tr")
+																																				.classed("matched",false);
+							  })
 								.attr("class", "arc")
 								.attr("transform", "translate(" + outerRadius + "," + outerRadius + ")");
 
@@ -194,23 +211,13 @@
 						var newRows = rows.enter()
 																.append("tr")
 																.on("mouseover", function(d,i) {
-				 												 var rowData = d3.select(this).data();
-				 												 var rowLabel = rowData[0].label;
-				 												 var matchingArc = d3.selectAll("svg g.arc").filter(function (d) {
-				 													 arcLabel = d.data.label;
-				 													 if(arcLabel == rowLabel) return true;
-				 												 });
-				 												 matchingArc.classed("matched", true);
+																	findMatchingSliceByLabel(d3.select(this).data()[0].label, "svg g.arc")
+																																								.classed("matched", true);
 				 											 })
 				 											 .on("mouseout", function(d,i) {
-				 												 var rowData = d3.select(this).data();
-				 												 var rowLabel = rowData[0].label;
-				 												 var matchingArc = d3.selectAll("svg g.arc").filter(function (d) {
-				 													 arcLabel = d.data.label;
-				 													 if(arcLabel == rowLabel) return true;
-				 												 });
-				 												 matchingArc.classed("matched", false);
-				 											 })																
+																 findMatchingSliceByLabel(d3.select(this).data()[0].label, "svg g.arc")
+																																							 .classed("matched", false);
+				 											 })
 																.html(function(d, i) {
 																	 return "<td>"+d.label+"</td>"+
 																					"<td>"+d.value+"</td>"+
