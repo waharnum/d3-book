@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="utf-8">
 		<title>D3: Pie layout</title>
-		<script type="text/javascript" src="d3/d3.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
 		<style type="text/css">
 
 			svg text {
@@ -233,7 +233,62 @@
 						var removedRows = rows.exit()
 																.remove("tr");
 
+
+
 				});
+
+
+							// Returns an attrTween for translating along the specified path element.
+							function translateAlong(path) {
+							  var l = path.getTotalLength();
+							  return function(d, i, a) {
+							    return function(t) {
+							      var p = path.getPointAtLength(t * l);
+							      return "translate(" + (p.y+outerRadius) + "," + (p.x+outerRadius) + ")";
+							    };
+							  };
+							}
+
+							// Draw circular path around pie chart, for player-positioning purposes
+
+											var radians = 2 * Math.PI;
+
+
+											var points = 50;
+											
+											var angle = d3.scale.linear()
+											    .domain([0, points-1])
+											    .range([0, radians]);
+
+											var line = d3.svg.line.radial()
+											    .interpolate("cardinal-closed")
+											    .tension(1)
+											    .radius(outerRadius)
+											    .angle(function(d, i) { return angle(i); });
+
+											var path = svg.append("path").datum(d3.range(points))
+											    .attr("class", "line")
+											    .attr("d", line)
+													.attr("stroke", "black")
+													.attr("stroke-width", 5)
+													.attr("fill-opacity", 0)
+											    .attr("transform", "translate(" + (outerRadius) + ", " + (outerRadius) + ")")
+													;
+
+													var circle = svg.append("circle")
+													    .attr("r", 13)
+															.attr("fill", "red")
+															.attr("transform", "translate(0,250)");
+
+															function transition() {
+															  circle.transition()
+																	  .delay(1500)
+															      .duration(15000)
+															      .attrTween("transform", translateAlong(path.node()))
+															      .each("end", transition);
+															}
+
+															transition();
 
 		</script>
 	</body>

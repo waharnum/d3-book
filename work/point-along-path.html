@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<body>
+<style>
+
+path {
+  fill: none;
+  stroke: #000;
+  stroke-width: 3px;
+}
+
+circle {
+  fill: steelblue;
+  stroke: #fff;
+  stroke-width: 3px;
+}
+
+</style>
+<script src="d3/d3.js"></script>
+<script>
+
+var points = [
+  [480, 200],
+  [580, 400],
+  [680, 100],
+  [780, 300],
+  [180, 300],
+  [280, 100],
+  [380, 400]
+];
+
+var svg = d3.select("body").append("svg")
+    .attr("width", 960)
+    .attr("height", 500);
+
+var path = svg.append("path")
+    .data([points])
+    .attr("d", d3.svg.line()
+    .tension(0) // Catmull–Rom
+    .interpolate("cardinal-closed"));
+
+svg.selectAll(".point")
+    .data(points)
+  .enter().append("circle")
+    .attr("r", 4)
+    .attr("transform", function(d) { return "translate(" + d + ")"; });
+
+var circle = svg.append("circle")
+    .attr("r", 13)
+    .attr("transform", "translate(" + points[0] + ")");
+
+transition();
+
+function transition() {
+  circle.transition()
+      .duration(10000)
+      .attrTween("transform", translateAlong(path.node()))
+      .each("end", transition);
+}
+
+// Returns an attrTween for translating along the specified path element.
+function translateAlong(path) {
+  var l = path.getTotalLength();
+  return function(d, i, a) {
+    return function(t) {
+      var p = path.getPointAtLength(t * l);
+      return "translate(" + p.x + "," + p.y + ")";
+    };
+  };
+}
+
+var radius = 250,
+    padding = 10,
+    radians = 2 * Math.PI;
+
+var dimension = (2 * radius) + (2 * padding),
+    points = 50;
+
+var angle = d3.scale.linear()
+    .domain([0, points-1])
+    .range([0, radians]);
+
+var line = d3.svg.line.radial()
+    .interpolate("basis")
+    .tension(0)
+    .radius(radius)
+    .angle(function(d, i) { return angle(i); });
+
+var svg = d3.select("body").append("svg")
+    .attr("width", dimension)
+    .attr("height", dimension)
+.append("g");
+
+var path = svg.append("path").datum(d3.range(points))
+    .attr("class", "line")
+    .attr("d", line)
+    .attr("transform", "translate(" + (radius + padding) + ", " + (radius + padding) + ")");
+
+</script>
